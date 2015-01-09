@@ -36,36 +36,44 @@ import eu.sqooss.service.logging.Logger;
  * </dl>
  * 
  */
-public class OnDiskCache extends CacheServiceImpl {
+public class OnDiskCache extends BaseCacheServiceImpl {
 
     public static final String CACHE_DIR = "eu.sqooss.service.cache.dir";
-    
+
     private File dir;
-    
-    private Logger log;
     
     public OnDiskCache(String cachedir) throws Exception {
         initDir(cachedir);
     }
     
     public OnDiskCache() throws Exception {
-        
         String dirpath = System.getProperty(CACHE_DIR);
         
         if (dirpath == null) {
             dirpath = System.getProperty("java.io.tmpdir");
-            if (dirpath == null)
+            if (dirpath == null) {
                 dirpath = "tmp";
+            }
         }
         initDir(dirpath);
-       
+    }
+
+    @Override
+    public boolean startUp() {
+        return true;
+    }
+
+    @Override
+    public void shutDown() {
+
     }
     
     private void initDir(String path) throws Exception {
         dir = new File(path);
 
-        if (!dir.exists())
+        if (!dir.exists()) {
             dir.mkdirs();
+        }
     }
     
     @Override
@@ -170,15 +178,20 @@ public class OnDiskCache extends CacheServiceImpl {
     private String md5(String...args) throws NoSuchAlgorithmException {
         MessageDigest m = MessageDigest.getInstance("MD5");
         
-        for (String arg : args)
+        for (String arg : args) {
             m.update(arg.getBytes(), 0, arg.length());
+        }
+
         return new BigInteger(1, m.digest()).toString(16);
     }
     
     private void warn(String message) {
-        if (log != null)
-            log.warn(message);
-        else 
+        Logger logger = getLogger();
+
+        if (logger != null) {
+            logger.warn(message);
+        } else {
             System.err.println(message);
+        }
     }
 }

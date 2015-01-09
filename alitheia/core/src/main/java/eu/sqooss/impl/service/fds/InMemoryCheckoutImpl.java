@@ -62,7 +62,7 @@ class InMemoryCheckoutImpl implements InMemoryCheckout {
     }
 
     protected void createCheckout() {
-        root = new InMemoryDirectory(this);
+        root = new InMemoryDirectoryImpl(this);
         
         List<ProjectFile> projectFiles = revision.getFiles();
         if (projectFiles != null && projectFiles.size() != 0) {

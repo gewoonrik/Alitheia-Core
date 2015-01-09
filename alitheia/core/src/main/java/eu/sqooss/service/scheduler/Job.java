@@ -208,42 +208,7 @@ public abstract class Job implements Comparable<Job> {
         }
     }
     
-    /**
-     * Executes the job. Makes sure that all dependencies are met. 
-     * 
-     * @return The time required to execute the Job in milliseconds.
-     * @throws Exception
-     */
-    final public long execute() throws Exception {
-        DBService dbs = AlitheiaCore.getInstance().getDBService();
-        long timer = System.currentTimeMillis();
-        try {
-            setState(State.Running);
-            restart();
-            
-            /*Idiot/bad programmer proofing*/
-            assert (!dbs.isDBSessionActive());            
-            if (dbs.isDBSessionActive()) {
-                dbs.rollbackDBSession();
-                setState(State.Error); //No uncommitted sessions are tolerated
-            } else {
-                if (state() != State.Yielded)
-                    setState(State.Finished);
-            }   
-        } catch(Exception e) {
-            
-            if (dbs.isDBSessionActive()) {
-                dbs.rollbackDBSession();
-            }
-            
-            // In case of an exception, state becomes Error
-            m_errorException = e;
-            setState(State.Error);
-            // the Exception itself is forwarded
-            throw e;
-        }
-        return System.currentTimeMillis() - timer;
-    }
+
 
     /**
      * Sets the job's state to Queued and informs the job about the new
@@ -303,41 +268,6 @@ public abstract class Job implements Comparable<Job> {
         return result;
     }
 
-    /**
-     * Waits for the job to finish.
-     * Note that this method even returns when the job's state changes to Error.
-     */
-    public final void waitForFinished() {
-    	try {
-            synchronized (this) {
-                // if this method is running inside of a WorkerThread
-                // we try to pass the job we're waiting for to the thread.
-                if (Thread.currentThread() instanceof WorkerThread) {
-                    WorkerThread t = (WorkerThread) Thread.currentThread();
-                    t.takeJob(this);
-                } else {
-                    throw new Exception();
-                }
-            }
-        } catch (Exception e) {
-            // if something went wrong with taking the job
-            // ok - we might be stuck...
-            if (m_scheduler.getSchedulerStats().getIdleWorkerThreads() == 0) {
-                m_scheduler.startOneShotWorkerThread();
-            }
-        }
-        synchronized (this) {
-            while (state() != State.Finished) {
-                if (state() == State.Error) {
-                    return;
-                }
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-    }
 
     /**
      * Checks, whether all dependencies are met and the job can be executed.
@@ -363,6 +293,10 @@ public abstract class Job implements Comparable<Job> {
         return this.m_errorException;
     }
 
+    /* package */ final void setErrorException(Exception e) {
+        m_errorException = e;
+    }
+
     /**
      * XXX bogus method, only used for putting it in into a Pair.
      */
@@ -384,7 +318,7 @@ public abstract class Job implements Comparable<Job> {
      * Sets the job's state.
      * @param s The new state.
      */
-    protected final void setState(State s) {
+    /* package */ final void setState(State s) {
         if (m_state == s) {
             return;
         }
@@ -456,7 +390,7 @@ public abstract class Job implements Comparable<Job> {
      * @throws Exception to signify that the maximum number of restarts
      * was reached
      */
-    protected void restart() throws Exception {
+     public void restart() throws Exception {
         restarts++;
         if (restarts >= 5) {
             throw new Exception("Too many restarts - failing job");

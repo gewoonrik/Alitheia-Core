@@ -32,11 +32,13 @@ public class SchedulerTests {
     
     @AfterClass
     public static void tearDown() {
+        /*
         while (sched.getSchedulerStats().getWaitingJobs() > 0)
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {}
             
         sched.stopExecute();
+        */
     }
 }

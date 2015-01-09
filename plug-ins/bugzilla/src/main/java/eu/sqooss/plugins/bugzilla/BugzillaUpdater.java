@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.service.db.Bug;
+import eu.sqooss.service.db.BugRepository;
 import eu.sqooss.service.db.DBService;
 import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.logging.Logger;
@@ -97,8 +98,9 @@ public class BugzillaUpdater implements MetadataUpdater, JobStateListener  {
 
         this.bts = AlitheiaCore.getInstance().getTDSService().getAccessor(
                 project.getId()).getBTSAccessor();
-        if (Bug.getLastUpdate(project) != null) {
-            bugIds = bts.getBugsNewerThan(Bug.getLastUpdate(project).getUpdateRun());
+        BugRepository bugRepository = new BugRepository();
+        if (bugRepository.getLastUpdate(project) != null) {
+            bugIds = bts.getBugsNewerThan(bugRepository.getLastUpdate(project).getUpdateRun());
         } else {
             bugIds = bts.getAllBugs();
         }

@@ -155,7 +155,13 @@ public class AlitheiaCore {
     public static AlitheiaCore getInstance() {
         return instance;
     }
-    
+
+
+
+    public static void setInstance(AlitheiaCore alitheiaCore) {
+        instance = alitheiaCore;
+    }
+
     /*Create a temp instance to use for testing.*/
     public static AlitheiaCore testInstance() {
         instance = new AlitheiaCore(null);

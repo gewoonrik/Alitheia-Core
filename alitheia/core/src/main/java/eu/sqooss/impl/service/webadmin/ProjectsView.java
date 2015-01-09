@@ -40,6 +40,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import eu.sqooss.service.db.*;
 import org.apache.velocity.VelocityContext;
 import org.osgi.framework.BundleContext;
 
@@ -49,11 +50,6 @@ import eu.sqooss.service.admin.AdminAction;
 import eu.sqooss.service.admin.AdminService;
 import eu.sqooss.service.admin.actions.AddProject;
 import eu.sqooss.service.admin.actions.UpdateProject;
-import eu.sqooss.service.db.Bug;
-import eu.sqooss.service.db.ClusterNode;
-import eu.sqooss.service.db.MailMessage;
-import eu.sqooss.service.db.ProjectVersion;
-import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.pa.PluginInfo;
 import eu.sqooss.service.scheduler.SchedulerException;
 import eu.sqooss.service.updater.Updater;
@@ -490,7 +486,8 @@ public class ProjectsView extends AbstractView {
                             + ((mm == null)?getLbl("l0051"):mm.getSendDate())
                             + "</td>\n");
                     // ID of the last known bug entry
-                    Bug bug = Bug.getLastUpdate(nextPrj);
+                    BugRepository bugRepository = new BugRepository();
+                    Bug bug = bugRepository.getLastUpdate(nextPrj);
                     b.append(sp(in) + "<td class=\"trans\">"
                             + ((bug == null)?getLbl("l0051"):bug.getBugID())
                             + "</td>\n");

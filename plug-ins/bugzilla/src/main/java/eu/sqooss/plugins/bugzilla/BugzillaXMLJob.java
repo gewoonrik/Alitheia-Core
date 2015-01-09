@@ -38,15 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import eu.sqooss.core.AlitheiaCore;
-import eu.sqooss.service.db.Bug;
-import eu.sqooss.service.db.BugPriority;
-import eu.sqooss.service.db.BugReportMessage;
-import eu.sqooss.service.db.BugResolution;
-import eu.sqooss.service.db.BugSeverity;
-import eu.sqooss.service.db.BugStatus;
-import eu.sqooss.service.db.DBService;
-import eu.sqooss.service.db.Developer;
-import eu.sqooss.service.db.StoredProject;
+import eu.sqooss.service.db.*;
 import eu.sqooss.service.db.BugPriority.Priority;
 import eu.sqooss.service.db.BugResolution.Resolution;
 import eu.sqooss.service.db.BugSeverity.Severity;
@@ -93,11 +85,13 @@ public class BugzillaXMLJob extends Job {
             return;
         }
 
+        BugRepository bugRepository = new BugRepository();
+
         // Filter out duplicate report messages
         if (bugExists(project, bugID)) {
             logger.debug(project.getName() + ": Updating existing bug "
                     + bugID);
-            List<BugReportMessage> msgs = bug.getAllReportComments();
+            List<BugReportMessage> msgs = bugRepository.getAllReportComments(bug);
             Set<BugReportMessage> newmsgs = bug.getReportMessages();
             Set<BugReportMessage> toadd = new LinkedHashSet<BugReportMessage>();
 

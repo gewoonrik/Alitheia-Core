@@ -35,11 +35,7 @@ package eu.sqooss.impl.service.scheduler;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.service.logging.Logger;
-import eu.sqooss.service.scheduler.Job;
-import eu.sqooss.service.scheduler.ResumePoint;
-import eu.sqooss.service.scheduler.Scheduler;
-import eu.sqooss.service.scheduler.SchedulerException;
-import eu.sqooss.service.scheduler.WorkerThread;
+import eu.sqooss.service.scheduler.*;
 
 /**
  * Worker thread executing jobs given by a scheduler.
@@ -120,8 +116,9 @@ class WorkerThreadImpl extends Thread implements WorkerThread {
 			m_job = j;
 			if (m_job.state() == Job.State.Yielded) {
 			    time = m_job.resume();
-			} else { 
-			    time = m_job.execute();
+			} else {
+				JobExecutor jobExecutor = new JobExecutor();
+			    time = jobExecutor.execute(m_job);
 			}
 		} catch (ClassCastException cce) { 
 		    AlitheiaCore.getInstance().getLogManager().createLogger(

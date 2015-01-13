@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 import eu.sqooss.core.AlitheiaCore;
@@ -11,6 +12,7 @@ import eu.sqooss.service.db.DBService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -55,11 +57,17 @@ public class JobExecutorTest {
 		verify(job, times(1)).setState(Job.State.Error);
 	}
 
+	@Spy
+	WorkerThread workerThread = new TestWorkerThread();
+
 	@Test
-	public void testWaitForFinished() {
-		//when(job.getScheduler().getSchedulerStats());
-		
+	public void testWaitForFinished() throws InterruptedException, SchedulerException {
+		workerThread.start();
+		synchronized (workerThread) {
+			workerThread.wait(2000);
+		}
 		verify(workerThread, times(1)).takeJob(job);
+
 	}
 
 	class TestWorkerThread extends Thread implements WorkerThread {
@@ -75,7 +83,16 @@ public class JobExecutorTest {
 
 		@Override
 		public void takeJob(Job job) throws SchedulerException {
+		}
 
+		@Override
+		public void run()	{
+			when(job.state()).thenReturn(Job.State.Finished);
+			JobExecutor jobExecutor = new JobExecutor();
+			jobExecutor.waitForFinished(job);
+			synchronized (this) {
+				this.notifyAll();
+			}
 		}
 	}
 }

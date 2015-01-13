@@ -18,17 +18,18 @@ public class JobExecutor {
             job.setState(Job.State.Running);
             job.restart();
 
-            /*Idiot/bad programmer proofing*/
+            // Idiot/bad programmer proofing
             assert (!dbs.isDBSessionActive());
+
             if (dbs.isDBSessionActive()) {
                 dbs.rollbackDBSession();
-                job.setState(Job.State.Error); //No uncommitted sessions are tolerated
+                job.setState(Job.State.Error); // No uncommitted sessions are tolerated
             } else {
-                if (job.state() != Job.State.Yielded)
+                if (job.state() != Job.State.Yielded) {
                     job.setState(Job.State.Finished);
+                }
             }
         } catch(Exception e) {
-
             if (dbs.isDBSessionActive()) {
                 dbs.rollbackDBSession();
             }
@@ -36,6 +37,7 @@ public class JobExecutor {
             // In case of an exception, state becomes Error
             job.setErrorException(e);
             job.setState(Job.State.Error);
+
             // the Exception itself is forwarded
             throw e;
         }

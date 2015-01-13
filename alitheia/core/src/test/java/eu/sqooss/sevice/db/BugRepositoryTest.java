@@ -103,5 +103,4 @@ public class BugRepositoryTest {
         assertNull(result);
     }
 
-
 }

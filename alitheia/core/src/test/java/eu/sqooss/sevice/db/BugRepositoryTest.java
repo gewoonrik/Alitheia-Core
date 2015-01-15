@@ -1,11 +1,10 @@
 package eu.sqooss.sevice.db;
 
 import eu.sqooss.core.AlitheiaCore;
-import eu.sqooss.impl.service.db.DBServiceImpl;
+import eu.sqooss.impl.service.db.BaseDBServiceImpl;
 import eu.sqooss.service.db.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class BugRepositoryTest {
 
     AlitheiaCore alitheiaCore = mock(AlitheiaCore.class);
-    DBService dbService = mock(DBServiceImpl.class);
+    DBService dbService = mock(BaseDBServiceImpl.class);
 
     @Before
     public void setUp() {

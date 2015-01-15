@@ -18,3 +18,5 @@ bin/
 *.iws
 *.db
 alitheia/cache/tmp/
+alitheia/core/tmp/
+alitheia/runner/

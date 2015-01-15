@@ -7,12 +7,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
+import eu.sqooss.service.db.MySQLDbServiceImpl;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -25,7 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import eu.sqooss.core.AlitheiaCore;
-import eu.sqooss.impl.service.db.DBServiceImpl;
+import eu.sqooss.impl.service.db.BaseDBServiceImpl;
 import eu.sqooss.impl.service.logging.LogManagerImpl;
 import eu.sqooss.plugins.updater.git.GitUpdater;
 import eu.sqooss.service.db.DBService;
@@ -38,9 +37,6 @@ import eu.sqooss.service.db.StoredProject;
 import eu.sqooss.service.logging.LogManager;
 import eu.sqooss.service.logging.Logger;
 import eu.sqooss.service.tds.AccessorException;
-import eu.sqooss.service.tds.CommitLog;
-import eu.sqooss.service.tds.InvalidProjectRevisionException;
-import eu.sqooss.service.tds.InvalidRepositoryException;
 import eu.sqooss.service.tds.Revision;
 
 public class TestGitUpdater extends TestGitSetup {
@@ -51,7 +47,7 @@ public class TestGitUpdater extends TestGitSetup {
     static StoredProject sp ;
     
     @BeforeClass
-    public static void setup() throws IOException, URISyntaxException {
+    public static void setup() throws IOException, URISyntaxException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         initTestRepo();
         
         Properties conProp = new Properties();
@@ -95,10 +91,10 @@ public class TestGitUpdater extends TestGitSetup {
         
         LogManager lm = new LogManagerImpl(true);
         l = lm.createLogger("sqooss.updater");
-        
+
         AlitheiaCore.testInstance();
         
-        db = new DBServiceImpl(conProp, config.toURL() , l);
+        db = new MySQLDbServiceImpl(conProp, config.toURL() , l);
         db.startDBSession();
         sp = new StoredProject();
         sp.setName(projectName);

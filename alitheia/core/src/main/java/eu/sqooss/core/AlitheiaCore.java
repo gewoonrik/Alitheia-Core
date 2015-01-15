@@ -40,11 +40,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import eu.sqooss.service.db.H2DbServiceImpl;
+import eu.sqooss.service.db.HSQLDbServiceImpl;
+import eu.sqooss.service.db.MySQLDbServiceImpl;
+import eu.sqooss.service.db.PostgresDbServiceImpl;
 import org.osgi.framework.BundleContext;
 
 import eu.sqooss.impl.service.admin.AdminServiceImpl;
 import eu.sqooss.impl.service.cluster.ClusterNodeServiceImpl;
-import eu.sqooss.impl.service.db.DBServiceImpl;
+import eu.sqooss.impl.service.db.BaseDBServiceImpl;
 import eu.sqooss.impl.service.fds.FDSServiceImpl;
 import eu.sqooss.impl.service.logging.LogManagerImpl;
 import eu.sqooss.impl.service.metricactivator.MetricActivatorImpl;
@@ -116,7 +120,7 @@ public class AlitheiaCore {
     	services.add(AdminService.class);
 
     	implementations.put(LogManager.class, LogManagerImpl.class);
-    	implementations.put(DBService.class, DBServiceImpl.class);	 
+    	implementations.put(DBService.class, BaseDBServiceImpl.class);
     	implementations.put(PluginAdmin.class, PAServiceImpl.class);
     	implementations.put(Scheduler.class, SchedulerServiceImpl.class);
     	implementations.put(TDSService.class, TDSServiceImpl.class);
@@ -134,7 +138,7 @@ public class AlitheiaCore {
      * 
      * @param bc The parent bundle's context object.
      */
-    public AlitheiaCore(BundleContext bc) {
+    public AlitheiaCore(BundleContext bc) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         this.bc = bc;
         instance = this;
         err("Instance Created");
@@ -163,7 +167,8 @@ public class AlitheiaCore {
     }
 
     /*Create a temp instance to use for testing.*/
-    public static AlitheiaCore testInstance() {
+    public static AlitheiaCore testInstance() throws IllegalAccessException, ClassNotFoundException,
+            InstantiationException {
         instance = new AlitheiaCore(null);
         return instance;
     }
@@ -201,10 +206,10 @@ public class AlitheiaCore {
      * method on their service interface. Failures are reported but do not 
      * block the instatiation process).
      */
-    private void init() {
-
+    private void init() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         err("Required services online, initialising");
 
+        // Logger
         logger = new LogManagerImpl();
         logger.setInitParams(bc, null);
         if (!logger.startUp()) {
@@ -213,18 +218,22 @@ public class AlitheiaCore {
         instances.put(LogManager.class, logger);
         err("Service " + LogManagerImpl.class.getName() + " started");
 
-        DBService db = DBServiceImpl.getInstance();
-        db.setInitParams(bc, logger.createLogger("sqooss.db"));
-        if (!db.startUp()) {
+        // Database
+        String impl = System.getProperty(BaseDBServiceImpl.DB);
+        Class clazz = Thread.currentThread().getContextClassLoader().loadClass(impl);
+
+        DBService dbService = (DBService) clazz.newInstance();
+        dbService.setInitParams(bc, logger.createLogger("sqooss.db"));
+
+        if (!dbService.startUp()) {
             err("Cannot start the DB service, aborting");
         }
-        instances.put(DBService.class, db);
-        err("Service " + DBServiceImpl.class.getName() + " started");
+        instances.put(DBService.class, dbService);
+        err("Service " + BaseDBServiceImpl.class.getName() + " started");
 
         for (Class<? extends AlitheiaCoreService> s : services) {
             initService(s);
         }
-
     }
 
     private synchronized void initService(Class<? extends AlitheiaCoreService> s) {
@@ -313,8 +322,8 @@ public class AlitheiaCore {
      * @return The DB component's instance.
      */
     public DBService getDBService() {
-        //return (DBServiceImpl)instances.get(DBService.class);
-        return DBServiceImpl.getInstance(); // <-- Ugly but required for testing.
+        return (DBService) instances.get(DBService.class);
+//        return BaseDBServiceImpl.getInstance(); // <-- Ugly but required for testing.
     }
     
     /**

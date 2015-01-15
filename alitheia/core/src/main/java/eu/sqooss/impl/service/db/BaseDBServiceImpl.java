@@ -75,36 +75,8 @@ import eu.sqooss.service.util.URIUtills;
  * @author Romain Pokrzywka, Georgios Gousios
  * 
  */
-public class DBServiceImpl implements DBService, AlitheiaCoreService {
-
+public abstract class BaseDBServiceImpl implements DBService, AlitheiaCoreService {
     private static DBService instance;
-    
-    public static Map<String, String> drivers = new HashMap<String, String>();
-    
-    static {
-        drivers.put("mysql", "com.mysql.jdbc.Driver");
-        drivers.put("hsqldb", "org.hsqldb.jdbcDriver");
-        drivers.put("postgres", "org.postgresql.Driver");
-        drivers.put("h2", "org.h2.Driver");
-    }
-    
-    public static Map<String, String> connString = new HashMap<String, String>();
-    
-    static {
-        connString.put("mysql", "jdbc:mysql://<HOST>/<SCHEMA>?useUnicode=true&amp;connectionCollation=utf8_general_ci&amp;characterSetResults=utf8");
-        connString.put("hsqldb", "jdbc:hsqldb:file:<SCHEMA>");
-        connString.put("postgres", "jdbc:postgresql://<HOST>/<SCHEMA>");
-        connString.put("h2", "jdbc:h2:<SCHEMA>");
-    }
-
-    public static Map<String, String> hbmDialects = new HashMap<String, String>();
-    
-    static {
-        hbmDialects.put("mysql", "org.hibernate.dialect.MySQLInnoDBDialect");
-        hbmDialects.put("hsqldb", "org.hibernate.dialect.HSQLDialect");
-        hbmDialects.put("postgres", "org.hibernate.dialect.PostgreSQLDialect");
-        hbmDialects.put("h2", "org.h2.Driver");
-    }
 
     public static Map<String, String> conPools = new HashMap<String, String>();
     
@@ -113,12 +85,12 @@ public class DBServiceImpl implements DBService, AlitheiaCoreService {
         conPools.put("c3p0", "org.hibernate.connection.C3P0ConnectionProvider");
     }
     
-    private static final String DB = "eu.sqooss.db";
-    private static final String DB_HOST = "eu.sqooss.db.host";
-    private static final String DB_SCHEMA = "eu.sqooss.db.schema";
-    private static final String DB_USERNAME = "eu.sqooss.db.user";
-    private static final String DB_PASSWORD = "eu.sqooss.db.passwd";
-    private static final String DB_CONPOOL = "eu.sqooss.db.conpool";
+    public static final String DB = "eu.sqooss.db";
+    public static final String DB_HOST = "eu.sqooss.db.host";
+    public static final String DB_SCHEMA = "eu.sqooss.db.schema";
+    public static final String DB_USERNAME = "eu.sqooss.db.user";
+    public static final String DB_PASSWORD = "eu.sqooss.db.passwd";
+    public static final String DB_CONPOOL = "eu.sqooss.db.conpool";
     
     private Logger logger = null;
     private SessionFactory sessionFactory = null;
@@ -283,20 +255,14 @@ public class DBServiceImpl implements DBService, AlitheiaCoreService {
         return true;
     }
     
-    public DBServiceImpl() { }
+    public BaseDBServiceImpl() { }
     
-    public DBServiceImpl(Properties p, URL configFileURL, Logger l) { 
+    public BaseDBServiceImpl(Properties p, URL configFileURL, Logger l) {
         this.conProp = p;
         this.logger = l;
         initHibernate(configFileURL);
         isInitialised.compareAndSet(false, true);
         instance = this;
-    }
-    
-    public static DBService getInstance() {
-        if (instance == null)
-            instance = new DBServiceImpl();
-        return instance;
     }
 
     public <T extends DAObject> T findObjectById(Class<T> daoClass, long id) {
@@ -776,15 +742,15 @@ public class DBServiceImpl implements DBService, AlitheiaCoreService {
     @Override
     public boolean startUp() {
         String db  = bc.getProperty(DB).toLowerCase();
-        String cs = connString.get(db);
+        String cs = getConnectionString();
         cs = cs.replaceAll("<HOST>", bc.getProperty(DB_HOST));
         cs = cs.replaceAll("<SCHEMA>", bc.getProperty(DB_SCHEMA));
             
-        conProp.setProperty("hibernate.connection.driver_class",  drivers.get(db));
+        conProp.setProperty("hibernate.connection.driver_class",  getDriver());
         conProp.setProperty("hibernate.connection.url", cs);
         conProp.setProperty("hibernate.connection.username", bc.getProperty(DB_USERNAME));
         conProp.setProperty("hibernate.connection.password", bc.getProperty(DB_PASSWORD));
-        conProp.setProperty("hibernate.connection.dialect",  hbmDialects.get(db));
+        conProp.setProperty("hibernate.connection.dialect",  getHbmDialect());
         conProp.setProperty("hibernate.connection.provider_class", conPools.get(bc.getProperty(DB_CONPOOL)));
         
         if (!getJDBCConnection()) {
@@ -810,6 +776,12 @@ public class DBServiceImpl implements DBService, AlitheiaCoreService {
 		this.bc = bc;
         this.logger = l;
 	}
+
+    protected abstract String getConnectionString();
+
+    protected abstract String getDriver();
+
+    protected abstract String getHbmDialect();
 }
 
 //vi: ai nosi sw=4 ts=4 expandtab

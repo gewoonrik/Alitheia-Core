@@ -1,15 +1,18 @@
-package eu.sqooss.service.db;
+package eu.sqooss.impl.service.db;
 
 import java.net.URL;
 import java.util.Properties;
 
-import eu.sqooss.impl.service.db.BaseDBServiceImpl;
 import eu.sqooss.service.logging.Logger;
 
 public class MySQLDbServiceImpl extends BaseDBServiceImpl {
 
 	public MySQLDbServiceImpl(Properties conProp, URL url, Logger l) {
 		super(conProp, url, l);
+	}
+
+	public MySQLDbServiceImpl() {
+
 	}
 
 	@Override

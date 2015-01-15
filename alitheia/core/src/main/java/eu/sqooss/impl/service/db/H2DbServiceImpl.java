@@ -1,9 +1,19 @@
-package eu.sqooss.service.db;
+package eu.sqooss.impl.service.db;
 
-import eu.sqooss.impl.service.db.BaseDBServiceImpl;
+import eu.sqooss.service.logging.Logger;
+
+import java.net.URL;
+import java.util.Properties;
 
 public class H2DbServiceImpl extends BaseDBServiceImpl {
 
+	public H2DbServiceImpl(Properties conProp, URL url, Logger l) {
+		super(conProp, url, l);
+	}
+
+	public H2DbServiceImpl() {
+
+	}
 	@Override
 	protected String getConnectionString() {
 		return "jdbc:h2:<SCHEMA>";

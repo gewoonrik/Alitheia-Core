@@ -40,10 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import eu.sqooss.service.db.H2DbServiceImpl;
-import eu.sqooss.service.db.HSQLDbServiceImpl;
-import eu.sqooss.service.db.MySQLDbServiceImpl;
-import eu.sqooss.service.db.PostgresDbServiceImpl;
 import org.osgi.framework.BundleContext;
 
 import eu.sqooss.impl.service.admin.AdminServiceImpl;

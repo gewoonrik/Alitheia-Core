@@ -741,7 +741,6 @@ public abstract class BaseDBServiceImpl implements DBService, AlitheiaCoreServic
 
     @Override
     public boolean startUp() {
-        String db  = bc.getProperty(DB).toLowerCase();
         String cs = getConnectionString();
         cs = cs.replaceAll("<HOST>", bc.getProperty(DB_HOST));
         cs = cs.replaceAll("<SCHEMA>", bc.getProperty(DB_SCHEMA));

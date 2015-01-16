@@ -5,13 +5,13 @@ import eu.sqooss.service.logging.Logger;
 import java.net.URL;
 import java.util.Properties;
 
-public class H2DbServiceImpl extends BaseDBServiceImpl {
+public class H2DBServiceImpl extends BaseDBServiceImpl {
 
-	public H2DbServiceImpl(Properties conProp, URL url, Logger l) {
+	public H2DBServiceImpl(Properties conProp, URL url, Logger l) {
 		super(conProp, url, l);
 	}
 
-	public H2DbServiceImpl() {
+	public H2DBServiceImpl() {
 
 	}
 	@Override

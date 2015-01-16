@@ -85,12 +85,11 @@ public abstract class BaseDBServiceImpl implements DBService, AlitheiaCoreServic
         conPools.put("c3p0", "org.hibernate.connection.C3P0ConnectionProvider");
     }
     
-    public static final String DB = "eu.sqooss.db";
-    public static final String DB_HOST = "eu.sqooss.db.host";
-    public static final String DB_SCHEMA = "eu.sqooss.db.schema";
-    public static final String DB_USERNAME = "eu.sqooss.db.user";
-    public static final String DB_PASSWORD = "eu.sqooss.db.passwd";
-    public static final String DB_CONPOOL = "eu.sqooss.db.conpool";
+    private static final String DB_HOST = "eu.sqooss.db.host";
+    private static final String DB_SCHEMA = "eu.sqooss.db.schema";
+    private static final String DB_USERNAME = "eu.sqooss.db.user";
+    private static final String DB_PASSWORD = "eu.sqooss.db.passwd";
+    private static final String DB_CONPOOL = "eu.sqooss.db.conpool";
     
     private Logger logger = null;
     private SessionFactory sessionFactory = null;

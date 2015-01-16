@@ -58,7 +58,7 @@
     <eu.sqooss.db.conpool>c3p0</eu.sqooss.db.conpool>
     -->   
     
-    <eu.sqooss.db>eu.sqooss.service.db.H2DbServiceImpl</eu.sqooss.db>
+    <eu.sqooss.db>eu.sqooss.service.db.H2DBServiceImpl</eu.sqooss.db>
     <eu.sqooss.db.host>localhost</eu.sqooss.db.host>
     <eu.sqooss.db.schema>alitheia;LOCK_MODE=3;MULTI_THREADED=true</eu.sqooss.db.schema>
     <eu.sqooss.db.user>sa</eu.sqooss.db.user>

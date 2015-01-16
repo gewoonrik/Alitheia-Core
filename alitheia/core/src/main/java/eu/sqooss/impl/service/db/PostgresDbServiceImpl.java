@@ -6,14 +6,14 @@ import eu.sqooss.service.logging.Logger;
 import java.net.URL;
 import java.util.Properties;
 
-public class PostgresDbServiceImpl extends BaseDBServiceImpl {
+public class PostgresDBServiceImpl extends BaseDBServiceImpl {
 
 
-	public PostgresDbServiceImpl(Properties conProp, URL url, Logger l) {
+	public PostgresDBServiceImpl(Properties conProp, URL url, Logger l) {
 		super(conProp, url, l);
 	}
 
-	public PostgresDbServiceImpl() {
+	public PostgresDBServiceImpl() {
 
 	}
 

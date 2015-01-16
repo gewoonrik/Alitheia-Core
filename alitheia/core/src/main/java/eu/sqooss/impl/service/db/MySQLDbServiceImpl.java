@@ -5,13 +5,13 @@ import java.util.Properties;
 
 import eu.sqooss.service.logging.Logger;
 
-public class MySQLDbServiceImpl extends BaseDBServiceImpl {
+public class MySQLDBServiceImpl extends BaseDBServiceImpl {
 
-	public MySQLDbServiceImpl(Properties conProp, URL url, Logger l) {
+	public MySQLDBServiceImpl(Properties conProp, URL url, Logger l) {
 		super(conProp, url, l);
 	}
 
-	public MySQLDbServiceImpl() {
+	public MySQLDBServiceImpl() {
 
 	}
 

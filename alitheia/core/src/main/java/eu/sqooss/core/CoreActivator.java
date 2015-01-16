@@ -33,6 +33,7 @@
 
 package eu.sqooss.core;
 
+import eu.sqooss.impl.service.db.DBServiceFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -47,7 +48,7 @@ public class CoreActivator implements BundleActivator {
     private ServiceRegistration sregCore;
 
     public void start(BundleContext bc) throws Exception {
-        core = new AlitheiaCore(bc);
+        core = new AlitheiaCore(bc, new DBServiceFactory(bc));
         sregCore = bc.registerService(AlitheiaCore.class.getName(), core, null);
     }
   

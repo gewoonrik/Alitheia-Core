@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import eu.sqooss.impl.service.db.DBServiceFactory;
 import org.osgi.framework.BundleContext;
 
 import eu.sqooss.impl.service.admin.AdminServiceImpl;
@@ -81,7 +82,8 @@ public class AlitheiaCore {
     
     /** The parent bundle's context object. */
     private BundleContext bc;
-    
+
+
     /** The Core is singleton-line because it has a special instance */
     private static AlitheiaCore instance = null;
     
@@ -134,13 +136,13 @@ public class AlitheiaCore {
      * 
      * @param bc The parent bundle's context object.
      */
-    public AlitheiaCore(BundleContext bc) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public AlitheiaCore(BundleContext bc, DBServiceFactory dbServiceFactory) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         this.bc = bc;
         instance = this;
         err("Instance Created");
         
         instances = new HashMap<Class<? extends AlitheiaCoreService>, Object>();
-        init();
+        init(dbServiceFactory);
     }
 
     /**
@@ -165,7 +167,7 @@ public class AlitheiaCore {
     /*Create a temp instance to use for testing.*/
     public static AlitheiaCore testInstance() throws IllegalAccessException, ClassNotFoundException,
             InstantiationException {
-        instance = new AlitheiaCore(null);
+        instance = new AlitheiaCore(null, null);
         return instance;
     }
     
@@ -202,7 +204,7 @@ public class AlitheiaCore {
      * method on their service interface. Failures are reported but do not 
      * block the instatiation process).
      */
-    private void init() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private void init(DBServiceFactory dbServiceFactory) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         err("Required services online, initialising");
 
         // Logger
@@ -214,11 +216,7 @@ public class AlitheiaCore {
         instances.put(LogManager.class, logger);
         err("Service " + LogManagerImpl.class.getName() + " started");
 
-        // Database
-        String impl = System.getProperty(BaseDBServiceImpl.DB);
-        Class clazz = Thread.currentThread().getContextClassLoader().loadClass(impl);
-
-        DBService dbService = (DBService) clazz.newInstance();
+        DBService dbService = dbServiceFactory.getDBService();
         dbService.setInitParams(bc, logger.createLogger("sqooss.db"));
 
         if (!dbService.startUp()) {

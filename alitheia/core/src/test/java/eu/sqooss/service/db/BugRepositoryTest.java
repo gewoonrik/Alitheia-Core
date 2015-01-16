@@ -1,4 +1,4 @@
-package eu.sqooss.sevice.db;
+package eu.sqooss.service.db;
 
 import eu.sqooss.core.AlitheiaCore;
 import eu.sqooss.impl.service.db.BaseDBServiceImpl;

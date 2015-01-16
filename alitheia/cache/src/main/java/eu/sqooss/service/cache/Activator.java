@@ -19,7 +19,7 @@ public class Activator implements BundleActivator {
      * @throws Exception
      */
     public void start(BundleContext bc) throws Exception {
-        String impl = System.getProperty(CACHE_IMPL_KEY);
+        String impl = bc.getProperty(CACHE_IMPL_KEY);
 
         if (impl == null) {
             impl = CACHE_IMPL_DEFAULT;

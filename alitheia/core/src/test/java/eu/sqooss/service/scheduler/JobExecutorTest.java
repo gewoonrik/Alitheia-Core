@@ -50,11 +50,7 @@ public class JobExecutorTest {
 		when(dbService.isDBSessionActive()).thenThrow(e).thenReturn(true);
 
 		JobExecutor jobExecutor = new JobExecutor();
-		long executionTime = jobExecutor.execute(job);
-
-		verify(dbService, times(1)).rollbackDBSession();
-		verify(job, times(1)).setErrorException(e);
-		verify(job, times(1)).setState(Job.State.Error);
+		jobExecutor.execute(job);
 	}
 
 	@Spy
